@@ -7,7 +7,7 @@
 # Created: Mon Mar	5 16:05:41 2018 (+0100)
 # Version: 0.1
 # Package-Requires: (flask, py3.7)
-# Last-Updated: Tue Mar  6 10:41:10 2018 (+0100)
+# Last-Updated: Tue Mar  6 11:32:59 2018 (+0100)
 #			By: Joerg Fallmann
 #	  Update #: 27
 # URL: https://www.bierinformatik.de/MoB
@@ -61,15 +61,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/mob",methods=['GET', 'POST'])
 def hello():
 	if request.method == 'POST':
-		text = request.form['text']
-		processed_text = text.upper()
-		return processed_text	
-	else:
-		return render_template('welcomepage.html')
-	
-@app.route('/mob/upload', methods=['GET', 'POST'])
-def upload_file():
-	if request.method == 'POST':
+		if request.form['text']:
+			text = request.form['text']
+			processed_text = text.upper()
+			flash(processed_text)
+			return processed_text	
 		# check if the post request has the file part
 		if 'file' not in request.files:
 			flash('No file part')
@@ -85,8 +81,9 @@ def upload_file():
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return redirect(url_for('uploaded_file',
 									filename=filename))
-	return ''
-		
+	else:
+		return render_template('welcomepage.html')
+	
 @app.route("/mob/draw")
 def calc():
 	return render_template('mob.html')
@@ -97,9 +94,12 @@ def deb():
 
 ###Subs
 def allowed_file(filename):
-	return '.' in filename and \
-		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+###Run as main
+if __name__ == "__main__":
+	
+    app.run()
 
 ###Laters
 #@app.route("/input")

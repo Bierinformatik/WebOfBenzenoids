@@ -44,9 +44,9 @@
 		 highlightHexImage.onload = function() {
 		 };
 
-		 filledHexImage.src = "static/images/filledhex.png";
-		 emptyHexImage.src = "static/images/emptyhex.png";
-		 highlightHexImage.src = "static/images/highlighthex.png";
+		 filledHexImage.src = "{{url_for('static', filename='images/filledhex.png')}}";
+		 emptyHexImage.src = "{{url_for('static', filename='images/emptyhex.png')}}";
+		 highlightHexImage.src = "{{url_for('static', filename='images/highlighthex.png')}}";
 
 		 var filledHexImages = [];
 
@@ -55,7 +55,7 @@
 				 var img = new Image();
 				 img.onload = function() {
 				 };
-				 img.src = "static/images/filled" + i + ".png";
+				 img.src = "{{url_for('static', filename='images/')}}" + "filled" + i + ".png";
 				 filledHexImages.push(img);
 			 }
 
@@ -100,7 +100,7 @@
 		 posfield.style.zIndex = 10;
 		 
 		 var board = [];
-
+		 
 		 var i=0,j=0;
 		 for(i=0; i<boardw; i++)
 			 {
@@ -247,18 +247,21 @@
 
 		 var update = false;
 		 var refresher = false;
-
+		 
+		 
 		 calcbutton.addEventListener('click', function(evt)
 			 {
+				 update = true;
 				 if (!refresher)
 					 {
 						 refresher = setInterval(function()
 							 {
-								 update = true;
 							 }, 100);
 					 }
 			 }, false);
 
+		 var selected = '';
+		 
 		 setInterval(function()
 			 {
 				 context.fillStyle = "#000";
@@ -271,15 +274,19 @@
 							 {
 								 for(j=0; j<boardh; j++)
 									 {
-										 check = pixelToTile(i, j, boardw, boardh, clamp);
-										 if (board[highlight.tilex][highlight.tiley] == 1)
+										 var x = i * 16 + (j % 2) * 8;
+										 var y = j * 14;
+										 if (board[i][j])
 											 {
-												 document.getElementById("coordinates").value += i + ',' + j + ';';
+												 selected += x + ',' + y + ';';
 											 }
 									 }
 							 }
 						 update = false;
+						 document.getElementById("coordinates").value = selected;
+						 selected = '';
 					 }
+				 
 				 // render
 				 var i=0,j=0;
 				 for(i=0; i<boardw; i++)
