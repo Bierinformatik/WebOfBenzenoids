@@ -271,8 +271,8 @@
 							 {
 								 for(j=0; j<boardh; j++)
 									 {
-
-										 if (board[i][j] == 0)
+										 check = pixelToTile(i, j, boardw, boardh, clamp);
+										 if (board[highlight.tilex][highlight.tiley] == 1)
 											 {
 												 document.getElementById("coordinates").value += i + ',' + j + ';';
 											 }
