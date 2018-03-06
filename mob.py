@@ -7,7 +7,7 @@
 # Created: Mon Mar	5 16:05:41 2018 (+0100)
 # Version: 0.1
 # Package-Requires: (flask, py3.7)
-# Last-Updated: Tue Mar  6 11:32:59 2018 (+0100)
+# Last-Updated: Tue Mar  6 15:58:59 2018 (+0100)
 #			By: Joerg Fallmann
 #	  Update #: 27
 # URL: https://www.bierinformatik.de/MoB
@@ -64,19 +64,18 @@ def hello():
 		if request.form['text']:
 			text = request.form['text']
 			processed_text = text.upper()
-			flash(processed_text)
-			return processed_text	
+			return processed_text
 		# check if the post request has the file part
 		if 'file' not in request.files:
-			flash('No file part')
+#			flash('No file part')
 			return redirect(request.url)
 		file = request.files['file']
 		# if user does not select file, browser also
 		# submit a empty part without filename
-		if file.filename == '':
-			flash('No selected file')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
+#		if file.filename == '':
+#			flash('No selected file')
+#			return redirect(request.url)
+		if file and allowed_file(file.filename) and file.filename != '':
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return redirect(url_for('uploaded_file',
