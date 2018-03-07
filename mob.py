@@ -7,7 +7,7 @@
 # Created: Mon Mar	5 16:05:41 2018 (+0100)
 # Version: 0.1
 # Package-Requires: (flask, py3.7)
-# Last-Updated: Tue Mar  6 15:58:59 2018 (+0100)
+# Last-Updated: Wed Mar  7 10:43:41 2018 (+0100)
 #			By: Joerg Fallmann
 #	  Update #: 27
 # URL: https://www.bierinformatik.de/MoB
@@ -64,6 +64,7 @@ def hello():
 		if request.form['text']:
 			text = request.form['text']
 			processed_text = text.upper()
+			#TODO send text as input
 			return processed_text
 		# check if the post request has the file part
 		if 'file' not in request.files:
