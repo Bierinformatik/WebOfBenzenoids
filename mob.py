@@ -7,7 +7,7 @@
 # Created: Mon Mar	5 16:05:41 2018 (+0100)
 # Version: 0.1
 # Package-Requires: (flask, py3.7)
-# Last-Updated: Wed Mar  7 10:43:41 2018 (+0100)
+# Last-Updated: Wed Mar  7 14:49:15 2018 (+0100)
 #			By: Joerg Fallmann
 #	  Update #: 27
 # URL: https://www.bierinformatik.de/MoB
@@ -66,7 +66,7 @@ def hello():
 			text = request.form['text']
 			processed_text = text.upper()
 			#TODO send text as input
-			return analyser.render_hexagon(processed_text)
+			return render_template('results.html', input=text, output=analyser.render_hexagon(processed_text))
 		# check if the post request has the file part
 		if 'file' not in request.files:
 #			flash('No file part')
