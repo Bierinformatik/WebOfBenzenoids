@@ -89,6 +89,19 @@ def hello():
 def calc():
 	return render_template('mob.html')
 
+@app.route("/mob/help")
+def help():
+	return render_template('help.html')
+
+@app.route("/mob/about")
+def about():
+	return render_template('about.html')
+
+@app.route("/mob/contact")
+def contact():
+	return render_template('contact.html')
+
+
 @app.route("/debug")
 def deb():
 	return render_template('index.html')
