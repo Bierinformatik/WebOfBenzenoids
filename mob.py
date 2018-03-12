@@ -67,7 +67,11 @@ def hello():
 			processed_text = text.upper()
 			#TODO send text as input
 			return render_template('results.html', input=text, output=analyser.render_hexagon(processed_text))
-		# check if the post request has the file part
+		if request.form['coord']:
+			textc = request.form['coord']
+			processed_text2 = textc.upper()
+			return render_template('results.html', input=text, output=analyser.str2benzenoid(processed_text2))
+                # check if the post request has the file part
 		if 'file' not in request.files:
 #			flash('No file part')
 			return redirect(request.url)
