@@ -3,13 +3,24 @@
 	<head>
 		<title>MathOfBenzenoids</title>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="../static/css/veryfirststyle.css">
+		<ul>
+		  <li><a href="http://127.0.0.1:5000/mob" id="linkout" title="Home">Home</a></li>
+		  <li><a href="http://127.0.0.1:5000/mob/help" id="linkout" title="Help">Help</a></li>
+		   <li><a href="http://127.0.0.1:5000/mob/contact" id="linkout" title="Contact">Contact</a></li>
+		   <li><a href="http://127.0.0.1:5000/mob/about" id="linkout" title="About">About</a></li>
+		</ul>
 	</head>
 	<body>
-		
+		<div id="page" style="margin-left:10%;padding:1px 16px;height:1000px;">
 		<button id="calcbutton">CALCULATE</button>
 		<button id="clearbutton">Clear</button>
+		<button id="anabutton">ANALYSE</button>
+		<button id="clearbutton2">Clear</button>
 		
 		<textarea id="coordinates"></textarea>
+
+		<textarea id="results"></textarea>
 		
 		<canvas id="canvas" width="500" height="500"></canvas>
 
@@ -30,7 +41,7 @@
 			 }
 
 			 cxt.strokeStyle = "#000000";
-			 cxt.lineWidth = 1;
+			 cxt.lineWidth = 3;
 			 cxt.stroke();
 		 }
 
@@ -72,7 +83,7 @@
 		 var boardw = Math.floor(width / 16.5);
 		 var boardh = Math.floor(height / 16);
 
-		 x = 0;
+		 x = 200;
 		 y = 0;
 		 z = 0;
 		 w = width;
@@ -90,22 +101,43 @@
 
 		 var calcbutton = document.getElementById('calcbutton');
 		 calcbutton.style.position = "absolute";
-		 calcbutton.style.left = 20+"px";
-		 calcbutton.style.top = (height - 50) +"px";
+		 calcbutton.style.left = x+20+"px";
+		 calcbutton.style.top = (height - 100) +"px";
 		 calcbutton.style.zIndex = 10;
+
+		 var anabutton = document.getElementById('anabutton');
+		 anabutton.style.position = "absolute";
+		 anabutton.style.left = x+900+"px";
+		 anabutton.style.top = (height - 100) +"px";
+		 anabutton.style.zIndex = 10;
 
 		 var clearbutton = document.getElementById('clearbutton');
 		 clearbutton.style.position = "absolute";
-		 clearbutton.style.left = 200+"px";
-		 clearbutton.style.top = (height - 50) +"px";
+		 clearbutton.style.left = x+200+"px";
+		 clearbutton.style.top = (height - 100) +"px";
 		 clearbutton.style.zIndex = 10;
+
+
+	 	 var clearbutton2 = document.getElementById('clearbutton2');
+		 clearbutton2.style.position = "absolute";
+		 clearbutton2.style.left = x+1050+"px";
+		 clearbutton2.style.top = (height - 100) +"px";
+		 clearbutton2.style.zIndex = 10;		 
 		 
 		 var posfield = document.getElementById('coordinates');
 		 posfield.style.position = "absolute";
-		 posfield.style.left = 400+"px";
+		 posfield.style.left = x+350+"px";
 		 posfield.style.width = 400+"px";
-		 posfield.style.top = (height - 50) +"px";
+		 posfield.style.top = (height - 100) +"px";
 		 posfield.style.zIndex = 10;
+
+
+		 var posfield2 = document.getElementById('results');
+		 posfield2.style.position = "absolute";
+		 posfield2.style.left = x+1200+"px";
+		 posfield2.style.width = 400+"px";
+		 posfield2.style.top = (height - 100) +"px";
+		 posfield2.style.zIndex = 10;
 		 
 		 var board = [];
 		 
@@ -283,14 +315,15 @@
 
 				 if (refresher)
 					 {
-						 clearInterval(refresher);
-						 refresher = false;
-					 }
+						clearInterval(refresher);
+						refresher = false;
+						   }
+				   document.getElementById("coordinates").value = selected;		    
 			 }, false);
-
+								    
 		 
 		 var selected = '';
-		 
+								  
 		 setInterval(function()
 			 {
 				 context.fillStyle = "#000";
@@ -315,7 +348,7 @@
 						 document.getElementById("coordinates").value = selected;
 						 selected = '';
 					 }
-				 
+
 				 // render
 				 var i=0,j=0;
 				 for(i=0; i<boardw; i++)
