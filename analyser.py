@@ -1,13 +1,15 @@
 import lib.importer
 import lib.benzenoids as bz
-#import sys
-#import traceback
+from subprocess import call
 
+#boundary code to coordinates and convexity deficit
 def render_hexagon(input_str):
     try:
         hex_list = lib.importer.bec_to_hex_list(input_str)
-        b = lib.benzenoids.Benzenoid(hex_list)
-        return str(hex_list) + '; deficit: ' + str(b.convex_deficit())
+        b = bz.Benzenoid(hex_list)
+        realbc = b.boundary_edges_code()
+        hex2pdf(b)
+        return 'bc:' + str(realbc) + '; coordinates:' + str(hex_list) + '; deficit: ' + str(b.convex_deficit())
     except:
         e= "Error: not a valid boundary code!"
 #        e = traceback.print_exc()
@@ -47,29 +49,56 @@ def str2coord(input_str):
     return coordlist
             
 
+#coordinate string to boundary code and convexity deficit
 def str2benzenoid(input_str):
     try:
         coord = str2coord(input_str)
         benz = bz.Benzenoid(coord)
         bec = benz.boundary_edges_code()
         cd = benz.convex_deficit()
-        return str(bec) + '; deficit: ' + str(cd)
+        hex2pdf(benz)
+        return 'bc:' + str(bec) + '; deficit: ' + str(cd)
     except Exception as error:
         print(error)
 
-        
+
+#benzenoid object to tex to pdf
+def hex2pdf(benz):
+    bec = benz.boundary_edges_code()
+    outfile = "static/outfiles/"+str(bec)+".tex"
+    pdffile = "static/outfiles/"+str(bec)+".pdf"
+    pngfile = "static/outfiles/"+str(bec)+".png"
+    template = "./templates/picture.tex"
+    bec2tikz = benz.tikz_picture_simple()
+    text = "";
+    file = open(template,"r")
+    f = open(outfile,"w")
+    for line in file:
+        if(line.startswith("<!PICTURE_HERE")):
+            f.write(bec2tikz)
+        else:
+            f.write(line)
+    file.close()
+    f.close()
+    call(["pdflatex", "-output-directory=static/outfiles/", outfile])
+    call(["convert", pdffile, pngfile])
+
+
 ##main to test program
     
 def main():
-    hex = "4343"
+    #boundary code to coordinates and convexity deficit
+    hex = "55"
     outhex = render_hexagon(hex)
     print(outhex)
-    #bec = [(0, 0), (-2, 1), (-1, 0), (-1, 1)]
+    #coordinate string to boundary code and convexity deficit
     becstr = "[(0, 0), (-2, 1), (-1, 0), (-1, 1)]"
     outbenz = str2benzenoid(becstr)
     print(outbenz)
-#    bec2tikz = benz.tikz_picture()
-#    print(bec2tikz)
+    #benzenoid object to tex to pdf
+#    coord = [(0, 0), (-2, 1), (-1, 0), (-1, 1)]
+#    benz = bz.Benzenoid(coord)
+#    hex2pdf(benz)
 
     
 if  __name__ =='__main__':
