@@ -5,423 +5,409 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="../static/css/veryfirststyle.css">
 		<ul>
-		  <li><a href="http://127.0.0.1:5000/mob" id="linkout" title="Home">Home</a></li>
-		  <li><a href="http://127.0.0.1:5000/mob/help" id="linkout" title="Help">Help</a></li>
-		   <li><a href="http://127.0.0.1:5000/mob/contact" id="linkout" title="Contact">Contact</a></li>
-		   <li><a href="http://127.0.0.1:5000/mob/about" id="linkout" title="About">About</a></li>
+			<li><a href="http://127.0.0.1:5000/mob" id="linkout" title="Home">Home</a></li>
+			<li><a href="http://127.0.0.1:5000/mob/help" id="linkout" title="Help">Help</a></li>
+			<li><a href="http://127.0.0.1:5000/mob/contact" id="linkout" title="Contact">Contact</a></li>
+			<li><a href="http://127.0.0.1:5000/mob/about" id="linkout" title="About">About</a></li>
 		</ul>
+		<script
+			src="https://code.jquery.com/jquery-3.3.1.js"
+				 integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+				 crossorigin="anonymous"></script>
 	</head>
 	<body>
 		<div id="page" style="margin-left:10%;padding:1px 16px;height:1000px;">
-		<button id="calcbutton">CALCULATE</button>
-		<button id="clearbutton">Clear</button>
-		<button id="anabutton">SUBMIT</button>
-		
-		<textarea id="coordinates"></textarea>
-		
-		<canvas id="canvas" width="500" height="500"></canvas>
+			<button id="calcbutton">CALCULATE</button>
+			<button id="clearbutton">Clear</button>
+			<button id="anabutton">SUBMIT</button>
 
-		<script type="text/javascript">
+			<textarea id="coordinates" name="coord"></textarea>
 
-		 function drawHex(cxt, size, x, y)
-		 {
-			 var numberOfSides = 6,
-				 size = size,
-				 Xcenter = x,
-				 Ycenter = y;
-			 
-			 cxt.beginPath();
-			 cxt.moveTo (Xcenter + size * Math.cos(0), Ycenter + size *  Math.sin(0));          
-			 
-			 for (var i = 1; i <= numberOfSides;i += 1) {
-				 cxt.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
+			<!-- 			<form id="calcit" method="POST">
+				 <input type="submit">
+				 <input name="coords">
+				 </form>
+			-->		
+
+			<canvas id="canvas" width="500" height="500"></canvas>
+
+			<script type="text/javascript">
+			 // action="http://127.0.0.1:5000/mob/draw" enctype='application/json'>
+			 function drawHex(cxt, size, x, y)
+			 {
+				 var numberOfSides = 6,
+					 size = size,
+					 Xcenter = x,
+					 Ycenter = y;
+				 
+				 cxt.beginPath();
+				 cxt.moveTo (Xcenter + size * Math.cos(0), Ycenter + size *  Math.sin(0));          
+				 
+				 for (var i = 1; i <= numberOfSides;i += 1) {
+					 cxt.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
+				 }
+
+				 cxt.strokeStyle = "#000000";
+				 cxt.lineWidth = 3;
+				 cxt.stroke();
 			 }
 
-			 cxt.strokeStyle = "#000000";
-			 cxt.lineWidth = 3;
-			 cxt.stroke();
-		 }
+			 var filledHexImage = new Image();
+			 filledHexImage.onload = function() {
+			 };
 
-		 var filledHexImage = new Image();
-		 filledHexImage.onload = function() {
-		 };
+			 var emptyHexImage = new Image();
+			 emptyHexImage.onload = function() {
+			 };
 
-		 var emptyHexImage = new Image();
-		 emptyHexImage.onload = function() {
-		 };
+			 var highlightHexImage = new Image();
+			 highlightHexImage.onload = function() {
+			 };
 
-		 var highlightHexImage = new Image();
-		 highlightHexImage.onload = function() {
-		 };
+			 filledHexImage.src = "{{url_for('static', filename='images/filledhex.png')}}";
+			 emptyHexImage.src = "{{url_for('static', filename='images/emptyhex.png')}}";
+			 highlightHexImage.src = "{{url_for('static', filename='images/highlighthex.png')}}";
 
-		 filledHexImage.src = "{{url_for('static', filename='images/filledhex.png')}}";
-		 emptyHexImage.src = "{{url_for('static', filename='images/emptyhex.png')}}";
-		 highlightHexImage.src = "{{url_for('static', filename='images/highlighthex.png')}}";
+			 var filledHexImages = [];
 
-		 var filledHexImages = [];
-
-		 for (var i=1;i<12;i++)
-			 {
-				 var img = new Image();
-				 img.onload = function() {
-				 };
-				 img.src = "{{url_for('static', filename='images/')}}" + "filled" + i + ".png";
-				 filledHexImages.push(img);
-			 }
-
-		 var body = document.body,
-			 html = document.documentElement;
-
-		 var height = Math.max( body.scrollHeight, body.offsetHeight, 
-								html.clientHeight, html.scrollHeight, html.offsetHeight );
-		 var width = Math.max( body.scrollWidth, body.offsetWidth, 
-							   html.clientWidth, html.scrollWidth, html.offsetWidth );
-
-		 var boardw = Math.floor(width / 16.5);
-		 var boardh = Math.floor(height / 16);
-
-		 x = 200;
-		 y = 0;
-		 z = 0;
-		 w = width;
-		 h = height;
-		 var canvas = document.getElementById('canvas');
-		 var context = canvas.getContext("2d");
-		 canvas.width = w;
-		 canvas.height = h;
-		 canvas.style.width = w+"px";
-		 canvas.style.height = h+"px";
-		 canvas.style.position = "absolute";
-		 canvas.style.left = x+"px";
-		 canvas.style.top = y+"px";
-		 canvas.style.zIndex = z;
-
-		 var calcbutton = document.getElementById('calcbutton');
-		 calcbutton.style.position = "absolute";
-		 calcbutton.style.left = x+20+"px";
-		 calcbutton.style.top = (height - 100) +"px";
-		 calcbutton.style.zIndex = 10;
-
-		 var anabutton = document.getElementById('anabutton');
-		 anabutton.style.position = "absolute";
-		 anabutton.style.left = x+900+"px";
-		 anabutton.style.top = (height - 100) +"px";
-		 anabutton.style.zIndex = 10;
-
-		 var clearbutton = document.getElementById('clearbutton');
-		 clearbutton.style.position = "absolute";
-		 clearbutton.style.left = x+200+"px";
-		 clearbutton.style.top = (height - 100) +"px";
-		 clearbutton.style.zIndex = 10;
-
-		 
-		 var posfield = document.getElementById('coordinates');
-		 posfield.style.position = "absolute";
-		 posfield.style.left = x+350+"px";
-		 posfield.style.width = 400+"px";
-		 posfield.style.top = (height - 100) +"px";
-		 posfield.style.zIndex = 10;
-
-		 
-		 var board = [];
-		 
-		 var i=0,j=0;
-		 for(i=0; i<boardw; i++)
-			 {
-				 board[i] = [];
-				 for(j=0; j<boardh; j++)
-					 {
-						 board[i][j] = 0;
-					 }
-			 }
-
-		 var highlight = {x: 0, y: 0};
-
-		 function wrap(c, boardc)
-		 {
-			 if (c < 0)
+			 for (var i=1;i<12;i++)
 				 {
-					 return boardc + c;
+					 var img = new Image();
+					 img.onload = function() {
+					 };
+					 img.src = "{{url_for('static', filename='images/')}}" + "filled" + i + ".png";
+					 filledHexImages.push(img);
 				 }
 
-			 if (c >= boardc)
-				 {
-					 return c % boardc;
-				 }
+			 var body = document.body,
+				 html = document.documentElement;
 
-			 return c;
-		 }
+			 var height = Math.max( body.scrollHeight, body.offsetHeight, 
+									html.clientHeight, html.scrollHeight, html.offsetHeight );
+			 var width = Math.max( body.scrollWidth, body.offsetWidth, 
+								   html.clientWidth, html.scrollWidth, html.offsetWidth );
 
+			 var boardw = Math.floor(width / 16.5);
+			 var boardh = Math.floor(height / 16);
 
-		 function clamp(c, boardc)
-		 {
-			 if (c < 0)
-				 {
-					 return 0;
-				 }
+			 x = 200;
+			 y = 0;
+			 z = 0;
+			 w = width;
+			 h = height;
+			 var canvas = document.getElementById('canvas');
+			 var context = canvas.getContext("2d");
+			 canvas.width = w;
+			 canvas.height = h;
+			 canvas.style.width = w+"px";
+			 canvas.style.height = h+"px";
+			 canvas.style.position = "absolute";
+			 canvas.style.left = x+"px";
+			 canvas.style.top = y+"px";
+			 canvas.style.zIndex = z;
 
-			 if (c >= boardc)
-				 {
-					 return boardc - 1;
-				 }
+			 var calcbutton = document.getElementById('calcbutton');
+			 calcbutton.style.position = "absolute";
+			 calcbutton.style.left = x+20+"px";
+			 calcbutton.style.top = (height - 100) +"px";
+			 calcbutton.style.zIndex = 10;
 
-			 return c;
-		 }
+			 var anabutton = document.getElementById('anabutton');
+			 anabutton.style.position = "absolute";
+			 anabutton.style.left = x+900+"px";
+			 anabutton.style.top = (height - 100) +"px";
+			 anabutton.style.zIndex = 10;
 
-		 function pixelToTile(px, py, boardw, boardh, func)
-		 {
-			 var tiley = Math.floor((py - 5) / 14);
-			 var tilex = Math.floor((px - (tiley % 2) * 8) / 16);
+			 var clearbutton = document.getElementById('clearbutton');
+			 clearbutton.style.position = "absolute";
+			 clearbutton.style.left = x+200+"px";
+			 clearbutton.style.top = (height - 100) +"px";
+			 clearbutton.style.zIndex = 10;
 
-			 tilex = func(tilex, boardw);
-			 tiley = func(tiley, boardh);
-
-			 var x = tilex * 16 + (tiley % 2) * 8;
-			 var y = tiley * 14;
-
-			 return {x: x, y: y, tilex: tilex, tiley: tiley};
 			 
-		 }
+			 var posfield = document.getElementById('coordinates');
+			 posfield.style.position = "absolute";
+			 posfield.style.left = x+350+"px";
+			 posfield.style.width = 400+"px";
+			 posfield.style.top = (height - 100) +"px";
+			 posfield.style.zIndex = 10;
 
-		 var buttonDown = false;
-		 var preventClick = false;
-
-		 canvas.addEventListener('mousedown', function(evt)
-			 {
-				 buttonDown = true;
-			 }, false);
-
-		 canvas.addEventListener('mouseup', function(evt)
-			 {
-				 highlight = pixelToTile(evt.layerX, evt.layerY, boardw, boardh, clamp);
-				 if (highlight && !preventClick)
-					 {
-						 board[highlight.tilex][highlight.tiley] = !board[highlight.tilex][highlight.tiley];
-					 }
-
-				 preventClick = false;
-				 buttonDown = false;        
-			 }, false);
-
-		 canvas.addEventListener('mousemove', function(evt)
-			 {
-				 highlight = pixelToTile(evt.layerX, evt.layerY, boardw, boardh, clamp);
-				 if (buttonDown && highlight)
-					 {
-						 preventClick = true;
-						 board[highlight.tilex][highlight.tiley] = 1;
-					 }
-
-			 }, false);
-
-
-		 function getAdjacentCells(cellX, cellY, boardw, boardh)
-		 {
-			 var adjList = [];
-			 if (cellY % 2)
+			 
+			 var board = [];
+			 
+			 var i=0,j=0;
+			 for(i=0; i<boardw; i++)
 				 {
-					 adjList = [
-						 {x: cellX    , y: cellY - 1, m: 1},
-						 {x: cellX - 1, y: cellY    , m: 1},
-						 {x: cellX    , y: cellY + 1, m: 1},
-						 {x: cellX + 1, y: cellY - 1, m: 1},
-						 {x: cellX + 1, y: cellY    , m: 1},
-						 {x: cellX + 1, y: cellY + 1, m: 1},
+					 board[i] = [];
+					 for(j=0; j<boardh; j++)
+						 {
+							 board[i][j] = 0;
+						 }
+				 }
+
+			 var highlight = {x: 0, y: 0};
+
+			 function wrap(c, boardc)
+			 {
+				 if (c < 0)
+					 {
+						 return boardc + c;
+					 }
+
+				 if (c >= boardc)
+					 {
+						 return c % boardc;
+					 }
+
+				 return c;
+			 }
+
+
+			 function clamp(c, boardc)
+			 {
+				 if (c < 0)
+					 {
+						 return 0;
+					 }
+
+				 if (c >= boardc)
+					 {
+						 return boardc - 1;
+					 }
+
+				 return c;
+			 }
+
+			 function pixelToTile(px, py, boardw, boardh, func)
+			 {
+				 var tiley = Math.floor((py - 5) / 14);
+				 var tilex = Math.floor((px - (tiley % 2) * 8) / 16);
+
+				 tilex = func(tilex, boardw);
+				 tiley = func(tiley, boardh);
+
+				 var x = tilex * 16 + (tiley % 2) * 8;
+				 var y = tiley * 14;
+
+				 return {x: x, y: y, tilex: tilex, tiley: tiley};
+				 
+			 }
+
+			 var buttonDown = false;
+			 var preventClick = false;
+
+			 canvas.addEventListener('mousedown', function(evt)
+				 {
+					 buttonDown = true;
+				 }, false);
+
+			 canvas.addEventListener('mouseup', function(evt)
+				 {
+					 highlight = pixelToTile(evt.layerX, evt.layerY, boardw, boardh, clamp);
+					 if (highlight && !preventClick)
+						 {
+							 board[highlight.tilex][highlight.tiley] = !board[highlight.tilex][highlight.tiley];
+						 }
+
+					 preventClick = false;
+					 buttonDown = false;        
+				 }, false);
+
+			 canvas.addEventListener('mousemove', function(evt)
+				 {
+					 highlight = pixelToTile(evt.layerX, evt.layerY, boardw, boardh, clamp);
+					 if (buttonDown && highlight)
+						 {
+							 preventClick = true;
+							 board[highlight.tilex][highlight.tiley] = 1;
+						 }
+
+				 }, false);
+
+
+			 function getAdjacentCells(cellX, cellY, boardw, boardh)
+			 {
+				 var adjList = [];
+				 if (cellY % 2)
+					 {
+						 adjList = [
+							 {x: cellX    , y: cellY - 1, m: 1},
+							 {x: cellX - 1, y: cellY    , m: 1},
+							 {x: cellX    , y: cellY + 1, m: 1},
+							 {x: cellX + 1, y: cellY - 1, m: 1},
+							 {x: cellX + 1, y: cellY    , m: 1},
+							 {x: cellX + 1, y: cellY + 1, m: 1},
+							 
+							 /*
+								{x: cellX    , y: cellY - 2, m: 0.3},
+								{x: cellX - 1, y: cellY - 1, m: 0.3},
+								{x: cellX + 2, y: cellY - 1, m: 0.3},
+								{x: cellX - 1, y: cellY + 1, m: 0.3},
+								{x: cellX + 2, y: cellY + 1, m: 0.3},
+								{x: cellX    , y: cellY + 2, m: 0.3},*/
+							 
+						 ]
+					 }
+				 else
+					 {
+						 adjList = [
+							 {x: cellX - 1, y: cellY - 1, m: 1},
+							 {x: cellX - 1, y: cellY    , m: 1},
+							 {x: cellX - 1, y: cellY + 1, m: 1},
+							 {x: cellX    , y: cellY - 1, m: 1},
+							 {x: cellX + 1, y: cellY    , m: 1},
+							 {x: cellX    , y: cellY + 1, m: 1},
+							 /*
+								{x: cellX    , y: cellY - 2, m: 0.3},
+								{x: cellX - 2, y: cellY - 1, m: 0.3},
+								{x: cellX + 1, y: cellY - 1, m: 0.3},
+								{x: cellX - 2, y: cellY + 1, m: 0.3},
+								{x: cellX + 1, y: cellY + 1, m: 0.3},
+								{x: cellX    , y: cellY + 2, m: 0.3},*/
+						 ]
+					 }
+
+				 var filtered = [];
+				 var i = 0;
+				 for (i=0; i<adjList.length; i++)
+					 {
+						 adjList[i].x = wrap(adjList[i].x, boardw);
+						 adjList[i].y = wrap(adjList[i].y, boardh);
 						 
-						 /*
-							{x: cellX    , y: cellY - 2, m: 0.3},
-							{x: cellX - 1, y: cellY - 1, m: 0.3},
-							{x: cellX + 2, y: cellY - 1, m: 0.3},
-							{x: cellX - 1, y: cellY + 1, m: 0.3},
-							{x: cellX + 2, y: cellY + 1, m: 0.3},
-							{x: cellX    , y: cellY + 2, m: 0.3},*/
-						 
-					 ]
-				 }
-			 else
-				 {
-					 adjList = [
-						 {x: cellX - 1, y: cellY - 1, m: 1},
-						 {x: cellX - 1, y: cellY    , m: 1},
-						 {x: cellX - 1, y: cellY + 1, m: 1},
-						 {x: cellX    , y: cellY - 1, m: 1},
-						 {x: cellX + 1, y: cellY    , m: 1},
-						 {x: cellX    , y: cellY + 1, m: 1},
-						 /*
-							{x: cellX    , y: cellY - 2, m: 0.3},
-							{x: cellX - 2, y: cellY - 1, m: 0.3},
-							{x: cellX + 1, y: cellY - 1, m: 0.3},
-							{x: cellX - 2, y: cellY + 1, m: 0.3},
-							{x: cellX + 1, y: cellY + 1, m: 0.3},
-							{x: cellX    , y: cellY + 2, m: 0.3},*/
-					 ]
-				 }
-
-			 var filtered = [];
-			 var i = 0;
-			 for (i=0; i<adjList.length; i++)
-				 {
-					 adjList[i].x = wrap(adjList[i].x, boardw);
-					 adjList[i].y = wrap(adjList[i].y, boardh);
-					 
-					 filtered.push(adjList[i]);
-				 }
-			 return filtered;
-		 }
-
-		 var update = false;
-		 var refresher = false;
-		 
-		 
-		 calcbutton.addEventListener('click', function(evt)
-			 {
-				 update = true;
-				 if (!refresher)
-					 {
-						 refresher = setInterval(function()
-							 {
-							 }, 100);
+						 filtered.push(adjList[i]);
 					 }
-			 }, false);
+				 return filtered;
+			 }
+
+			 var update = false;
+			 var refresher = false;
+			 
+			 
+			 calcbutton.addEventListener('click', function(evt)
+				 {
+					 update = true;
+					 if (!refresher)
+						 {
+							 refresher = setInterval(function()
+								 {
+								 }, 100);
+						 }
+				 }, false);
 
      		 anabutton.addEventListener('click', function(evt)
-			 {
-				 update = true;
-				 if (!refresher)
-					 {
-						 refresher = setAnaInterval(function()
-							 {
-							 }, 100);
-					 }
-			 }, false);
-
-		 clearbutton.addEventListener('click', function(evt)
-			 {
-
-				 var i=0,j=0;
-				 for(i=0; i<boardw; i++)
-					 {
-						 board[i] = [];
-						 for(j=0; j<boardh; j++)
-							 {
-								 board[i][j] = 0;
-							 }
-					 }
-
-				 if (refresher)
-					 {
-						clearInterval(refresher);
-						refresher = false;
-						   }
-								    document.getElementById("coordinates").value = selected;
-			    }, false);
-
-								    
-		 var selected = '';
-								  
-		 setInterval(function()
-			 {
-				 context.fillStyle = "#000";
-				 context.fillRect(0, 0, w, h);
-
-				 if (update)
-					 {
-						 // calculate
-						 for(i=0; i<boardw; i++)
-							 {
-								 for(j=0; j<boardh; j++)
-									 {
-										 var x = i * 16 + (j % 2) * 8;
-										 var y = j * 14;
-										 if (board[i][j])
-											 {
-												 selected += x + ',' + y + ';';
-											 }
+				 {
+					 if ($('#coordinates').val()){
+						 var coord = $('#coordinates').val();
+//This would be a nice way if I could make it work, doesn't matter, we use ajax
+						 //						 var ret = { 'coords' : coord};						 
+						 //						 //						 var jsn = JSON.stringify(ret);
+						 //						 $('#calcit').val(coord);
+						 //						 alert($('#calcit').val())
+						 //						 $('form').submit()
+						 //					 }
+						 // This is the ajax way, but it needs dirty hacks to make flask render after ajax post					 
+						 var urls = $(location).attr('href').split('/');
+						 var url = "";
+						 for (i = 0; i < urls.length-2; i++) {
+					 		 url += urls[i];
+					 		 url += "/";
+						 }
+						 url += urls[urls.length-2]+'/results';
+						 if (coord){
+					 		 $.ajax({
+								 url: url,
+					 			 data: JSON.stringify({coords:coord}),
+					 			 type: 'POST',
+					 			 contentType: "application/json",
+					 			 dataType: 'json',
+								 success: function(response) {
+									 if (response.redirect) {
+										 window.location.href = response.redirect;
 									 }
-							 }
-						 update = false;
-						 document.getElementById("coordinates").value = selected;
-						 selected = '';
+								 },
+					 			 error: function(exception) {
+					 				 alert('Exception: '+ url + data);
+					 			 }
+					 		 })
+						 }
 					 }
+				 }, false);
+			 
+			 clearbutton.addEventListener('click', function(evt)
+				 {
+					 
+					 var i=0,j=0;
+					 for(i=0; i<boardw; i++)
+						 {
+							 board[i] = [];
+							 for(j=0; j<boardh; j++)
+								 {
+									 board[i][j] = 0;
+								 }
+						 }
 
-				 // render
-				 var i=0,j=0;
-				 for(i=0; i<boardw; i++)
-					 {
-						 for(j=0; j<boardh; j++)
-							 {
-								 var x = i * 16 + (j % 2) * 8;
-								 var y = j * 14;
-								 var hex = emptyHexImage;
-								 if (board[i][j])
-									 {
-										 hex = filledHexImages[ (board[i][j]-1)  % filledHexImages.length];
-									 }
-								 context.drawImage(hex, x, y);
-							 }
-					 }
-				 
-				 if (highlight)
-					 {
-						 context.drawImage(highlightHexImage, highlight.x, highlight.y);
-					 }
-				 
-			 }, 16)
+					 if (refresher)
+						 {
+							 clearInterval(refresher);
+							 refresher = false;
+						 }
+					 document.getElementById("coordinates").value = selected;
+				 }, false);
 
+			 
+			 var selected = '';
+			 
+			 setInterval(function()
+				 {
+					 context.fillStyle = "#000";
+					 context.fillRect(0, 0, w, h);
 
-    		 setAnaInterval(function()
-								    {
-<!--								   window.location.href = "http://example.com/new_url"; -->
-				 context.fillStyle = "#000";
-				 context.fillRect(0, 0, w, h);
+					 if (update)
+						 {
+							 // calculate
+							 for(i=0; i<boardw; i++)
+								 {
+									 for(j=0; j<boardh; j++)
+										 {
+											 var x = i * 16 + (j % 2) * 8;
+											 var y = j * 14;
+											 if (board[i][j])
+												 {
+													 selected += x + ',' + y + ';';
+												 }
+										 }
+								 }
+							 update = false;
+							 document.getElementById("coordinates").value = selected;
+							 selected = '';
+						 }
 
-				 if (update)
-					 {
-						 // calculate
-						 for(i=0; i<boardw; i++)
-							 {
-								 for(j=0; j<boardh; j++)
-									 {
-										 var x = i * 16 + (j % 2) * 8;
-										 var y = j * 14;
-										 if (board[i][j])
-											 {
-												 selected += x + ',' + y + ';';
-											 }
-									 }
-							 }
-						update = false;
-						document.getElementById("coordinates").value = selected;
-						<!-- call other html page here that outputs the information given the coordinates-->				    
-						selected = '';
-					 }
+					 // render
+					 var i=0,j=0;
+					 for(i=0; i<boardw; i++)
+						 {
+							 for(j=0; j<boardh; j++)
+								 {
+									 var x = i * 16 + (j % 2) * 8;
+									 var y = j * 14;
+									 var hex = emptyHexImage;
+									 if (board[i][j])
+										 {
+											 hex = filledHexImages[ (board[i][j]-1)  % filledHexImages.length];
+										 }
+									 context.drawImage(hex, x, y);
+								 }
+						 }
+					 
+					 if (highlight)
+						 {
+							 context.drawImage(highlightHexImage, highlight.x, highlight.y);
+						 }
+					 
+				 }, 16)
 
-				 // render
-				 var i=0,j=0;
-				 for(i=0; i<boardw; i++)
-					 {
-						 for(j=0; j<boardh; j++)
-							 {
-								 var x = i * 16 + (j % 2) * 8;
-								 var y = j * 14;
-								 var hex = emptyHexImage;
-								 if (board[i][j])
-									 {
-										 hex = filledHexImages[ (board[i][j]-1)  % filledHexImages.length];
-									 }
-								 context.drawImage(hex, x, y);
-							 }
-					 }
-				 
-				 if (highlight)
-					 {
-						 context.drawImage(highlightHexImage, highlight.x, highlight.y);
-					 }
-				 
-			 }, 16)
+			</script>
 
-		</script>
-
-		
+			
 	</body>
 </html>

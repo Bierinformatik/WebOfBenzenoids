@@ -7,7 +7,7 @@
 # Created: Mon Mar	5 16:05:41 2018 (+0100)
 # Version: 0.1
 # Package-Requires: (flask, py3.7)
-# Last-Updated: Wed Mar  7 14:49:15 2018 (+0100)
+# Last-Updated: Tue Mar 13 18:36:17 2018 (+0100)
 #			By: Joerg Fallmann
 #	  Update #: 27
 # URL: https://www.bierinformatik.de/MoB
@@ -57,6 +57,7 @@ app = Flask(__name__, static_url_path='/static')
 
 ###Configs
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.debug = True ### debug mode on
 
 ###Routes
 @app.route("/mob",methods=['GET', 'POST'])
@@ -67,11 +68,16 @@ def hello():
 			processed_text = text.upper()
 			#TODO send text as input
 			return render_template('results.html', input=text, output=analyser.render_hexagon(processed_text))
-		if request.form['coord']:
-			textc = request.form['coord']
+		if request.form['coords']:
+			textc = request.form['coords']
 			processed_text2 = textc.upper()
-			return render_template('results.html', input=text, output=analyser.str2benzenoid(processed_text2))
-                # check if the post request has the file part
+			return render_template('results.html', input=textc, output=analyser.str2benzenoid(processed_text2))
+		if request.get_json()['coords']:
+			textc = request.get_json()
+			processed_text2 = textc.upper()
+			return render_template('results.html', input=textc, output=analyser.str2benzenoid(processed_text2))
+
+		# check if the post request has the file part
 		if 'file' not in request.files:
 #			flash('No file part')
 			return redirect(request.url)
@@ -84,15 +90,26 @@ def hello():
 		if file and allowed_file(file.filename) and file.filename != '':
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return redirect(url_for('uploaded_file',
-									filename=filename))
+			return redirect(url_for('uploaded_file', filename=filename))
 	else:
 		return render_template('welcomepage.html')
 	
-@app.route("/mob/draw")
+@app.route("/mob/draw",methods=['GET'])
 def calc():
 	return render_template('mob.html')
 
+@app.route("/mob/results",methods=['GET', 'POST'])
+def res():	
+	if request.method == 'POST':
+		jn = request.get_json()			
+		coords = jn.get('coords').upper()
+		return jsonify(dict(redirect='/mob/results?coords='+coords))
+	else:
+		if request.args.get('coords'):
+			textc = request.args.get('coords')
+			processed = textc.upper()  
+			return render_template('results.html', input=textc, output=analyser.str2benzenoid(processed))
+	
 @app.route("/mob/help")
 def help():
 	return render_template('help.html')
@@ -104,7 +121,6 @@ def about():
 @app.route("/mob/contact")
 def contact():
 	return render_template('contact.html')
-
 
 @app.route("/debug")
 def deb():
