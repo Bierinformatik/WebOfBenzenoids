@@ -15,7 +15,7 @@
 		<div id="page" style="margin-left:10%;padding:1px 16px;height:1000px;">
 		<button id="calcbutton">CALCULATE</button>
 		<button id="clearbutton">Clear</button>
-		<button id="anabutton">SUBMIT</button>
+
 		
 		<textarea id="coordinates"></textarea>
 		
@@ -38,7 +38,7 @@
 			 }
 
 			 cxt.strokeStyle = "#000000";
-			 cxt.lineWidth = 3;
+			 cxt.lineWidth = 1;
 			 cxt.stroke();
 		 }
 
@@ -102,12 +102,6 @@
 		 calcbutton.style.top = (height - 100) +"px";
 		 calcbutton.style.zIndex = 10;
 
-		 var anabutton = document.getElementById('anabutton');
-		 anabutton.style.position = "absolute";
-		 anabutton.style.left = x+900+"px";
-		 anabutton.style.top = (height - 100) +"px";
-		 anabutton.style.zIndex = 10;
-
 		 var clearbutton = document.getElementById('clearbutton');
 		 clearbutton.style.position = "absolute";
 		 clearbutton.style.left = x+200+"px";
@@ -117,11 +111,10 @@
 		 
 		 var posfield = document.getElementById('coordinates');
 		 posfield.style.position = "absolute";
-		 posfield.style.left = x+350+"px";
+		 posfield.style.left = x+400+"px";
 		 posfield.style.width = 400+"px";
 		 posfield.style.top = (height - 100) +"px";
 		 posfield.style.zIndex = 10;
-
 		 
 		 var board = [];
 		 
@@ -284,17 +277,6 @@
 					 }
 			 }, false);
 
-     		 anabutton.addEventListener('click', function(evt)
-			 {
-				 update = true;
-				 if (!refresher)
-					 {
-						 refresher = setAnaInterval(function()
-							 {
-							 }, 100);
-					 }
-			 }, false);
-
 		 clearbutton.addEventListener('click', function(evt)
 			 {
 
@@ -310,15 +292,14 @@
 
 				 if (refresher)
 					 {
-						clearInterval(refresher);
-						refresher = false;
-						   }
-								    document.getElementById("coordinates").value = selected;
-			    }, false);
+						 clearInterval(refresher);
+						 refresher = false;
+					 }
+			 }, false);
 
-								    
+		 
 		 var selected = '';
-								  
+		 
 		 setInterval(function()
 			 {
 				 context.fillStyle = "#000";
@@ -340,10 +321,11 @@
 									 }
 							 }
 						 update = false;
-						 document.getElementById("coordinates").value = selected;
+										    document.getElementById("coordinates").value = selected;
+										    
 						 selected = '';
 					 }
-
+				 
 				 // render
 				 var i=0,j=0;
 				 for(i=0; i<boardw; i++)
@@ -367,59 +349,7 @@
 					 }
 				 
 			 }, 16)
-
-
-    		 setAnaInterval(function()
-								    {
-<!--								   window.location.href = "http://example.com/new_url"; -->
-				 context.fillStyle = "#000";
-				 context.fillRect(0, 0, w, h);
-
-				 if (update)
-					 {
-						 // calculate
-						 for(i=0; i<boardw; i++)
-							 {
-								 for(j=0; j<boardh; j++)
-									 {
-										 var x = i * 16 + (j % 2) * 8;
-										 var y = j * 14;
-										 if (board[i][j])
-											 {
-												 selected += x + ',' + y + ';';
-											 }
-									 }
-							 }
-						update = false;
-						document.getElementById("coordinates").value = selected;
-						<!-- call other html page here that outputs the information given the coordinates-->				    
-						selected = '';
-					 }
-
-				 // render
-				 var i=0,j=0;
-				 for(i=0; i<boardw; i++)
-					 {
-						 for(j=0; j<boardh; j++)
-							 {
-								 var x = i * 16 + (j % 2) * 8;
-								 var y = j * 14;
-								 var hex = emptyHexImage;
-								 if (board[i][j])
-									 {
-										 hex = filledHexImages[ (board[i][j]-1)  % filledHexImages.length];
-									 }
-								 context.drawImage(hex, x, y);
-							 }
-					 }
-				 
-				 if (highlight)
-					 {
-						 context.drawImage(highlightHexImage, highlight.x, highlight.y);
-					 }
-				 
-			 }, 16)
-
+		 
 		</script>
 
 		
