@@ -66,11 +66,15 @@ def hello():
                         text = request.form['text']
                         processed_text = text.upper()
 			#TODO send text as input
-                        return render_template('results.html', input=text, output=analyser.render_hexagon(processed_text))
+                        outp = analyser.render_hexagon(processed_text)
+                        image = getBCI(outp)
+                        return render_template('results.html', input=(text), output=outp, comment = image) #boundarycode is needed to find the image
                 elif 'coord' in request.form:
                         text = request.form['coord']
                         processed_text = text.upper()
-                        return render_template('results.html', input=text, output=analyser.str2benzenoid(processed_text))
+                        outp = analyser.str2benzenoid(processed_text)
+                        image = getBC(outp)
+                        return render_template('results.html', input=text, output=outp, comment = image)
                 # check if the post request has the file part
                 else:
                         return redirect(request.url)
@@ -114,6 +118,16 @@ def deb():
 ###Subs
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def getBCI(istring):
+        istring2 = istring.replace(" ","")
+        infos = istring2.split(';')
+        for i in infos:
+                if(i.startswith("bc")):
+                   elems = i.split(':')
+                   imagename = "static/outfiles/" + elems[1]+".png" 
+                   return imagename #this is the outfolder + boundary code + .png = image name
+        return "NA" #error case
 
 ###Run as main
 if __name__ == "__main__":
