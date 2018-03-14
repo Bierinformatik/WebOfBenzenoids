@@ -74,7 +74,7 @@ def hello():
 			text = request.form['coord']
 			processed_text = text.upper()
 			outp = analyser.str2benzenoid(processed_text)
-			image = getBC(outp)
+			image = getBCI(outp)
 			return render_template('results.html', input=text, output=outp, comment = image)
 		# check if the post request has the file part
 		else:

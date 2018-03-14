@@ -38,14 +38,18 @@ def str2coord(input_str):
     cura = 0
     curb = 0
     for s in spstr:
-        if(s[0] =='('):
-            cura = int(s[1:])
-        elif(s[-1] == ')'):
-            curb = int(s[:-1])
+        if(s==""):
+            continue
+        sopen = s.find('(')
+        sclose = s.find(')')
+        if(sopen != -1):
+            cura = int(s[sopen+1:])
+        elif(sclose != -1):
+            curb = int(s[:sclose])
             p = (cura,curb)
             coordlist.append(p)
         else:
-            raise Exception("Error! Weird format!")
+            raise Exception("Error! Weird format!"+s)
     return coordlist
             
 
