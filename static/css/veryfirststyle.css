@@ -115,7 +115,7 @@ a img {
 }
 
 #menu .active a {
-	background: url(images/img02.gif) no-repeat 100% -40px;
+	background: no-repeat 100% -40px;
 }
 
 /* Page */
