@@ -163,3 +163,31 @@ website color
 	margin: 0px;
 	padding-left: 20px;
 }
+
+/* Sidebar */
+
+#sidebar {
+	float: left;
+	width: 300px;
+	font-size: 1.4em;	
+}
+
+
+#sidebar ul {
+	margin: 0px;
+	padding: 49px 0px 0px 0px;
+	list-style: none;
+	line-height: normal;
+}
+
+#sidebar a {
+	text-decoration: none;
+	color: #FFFFFF;
+	display: block;
+	width: auto;
+	padding: 6px 20px;
+}
+
+#sidebar a:hover {
+	text-decoration: underline;
+}
