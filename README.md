@@ -1,4 +1,4 @@
-![MOB](static/images/mob_logo.png "")
+![MOB](static/images/logo.png "")
 # MathOfBenzenoids
 ##Have a look: [Flask](http://flask.pocoo.org/docs/0.12/quickstart/#a-minimal-application)
 
