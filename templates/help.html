@@ -13,9 +13,8 @@
 	<div id="header">
 		<div id="logo">
 			
-
-<img src="/static/images/logo.png" alt="logo" style="width:140px;float: left;margin-top: 22px">
-<h1 style="float: right;"><a href="#"><p style="color:#db591a">Math of Benzenoids</p></a></h1>
+<a href="http://127.0.0.1:5000/mob" id="linkout" title="Home"><img src="/static/images/logo.png" alt="logo" style="width:140px;float: left;margin-top: 22px"></a>
+<h1 style="float: right;"><a href="http://127.0.0.1:5000/mob"><p style="color:#db591a">Math of Benzenoids</p></a></h1>
 		</div> 
 		<!-- end #logo -->
 
@@ -34,9 +33,23 @@
 		<div class="post">
 			<h2>MOB help pages</h2>
 			TODO: insert information, TODO: 
+			<br>
+			<h3>Boundary Edges Code</h3>
+			<p>
+			The boundary edges code (bec) completely describes benzenoids that do not contain "holes" in their structure. According to convention start at the lower left-most hexagon and count its outer edges. Proceed counterclockwise for each hexagon until the start hexagon is reached again. Check out the following example:
+			</p>
+			<p class="center">
+			<img src="/static/images/bec.png" style="width:350px" >
+			<br>
+			The resulting bec is "512135115123".
+			</p>
 
-			<br><p>
-			<img src="/static/images/bec.png" style="width:350px" class="center">
+			<h3>List of Hexagons</h3>
+			<p>
+			In this numerical representation of a benzenoid we consider an underlying grid. Here, we need two coordinates for each hexagon: the first coordinate maps the row number starting from bottom to top; the second coordinate numbers diagonals from bottom left to top right starting from the left side. Check out this example:
+			</p>
+			<p class="center">
+			TODO
 			</p>
 		</div>
 		<!-- end #content -->
