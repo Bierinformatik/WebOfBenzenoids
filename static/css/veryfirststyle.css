@@ -191,3 +191,10 @@ website color
 #sidebar a:hover {
 	text-decoration: underline;
 }
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
